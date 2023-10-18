@@ -1,16 +1,22 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
     provider = "prisma-client-js"
 }
 
+generator markdown {
+    provider = "prisma-markdown"
+    output   = "./docs/prisma.md"
+    title    = "Colera ERP"
+}
+
+generator zod {
+    provider          = "prisma-zod-generator"
+    output            = "../src/schemas"
+    isGenerateSelect  = true
+    isGenerateInclude = true
+}
+
 datasource db {
-    provider = "sqlite"
-    // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+    provider = "postgresql"
     url      = env("DATABASE_URL")
 }
 
@@ -54,14 +60,16 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String         @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?        @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
     posts         Post[]
+    Company       Company[]
+    CompanyUsers  CompanyUsers[]
 }
 
 model VerificationToken {
@@ -70,4 +78,94 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Company {
+    id        Int      @id @default(autoincrement())
+    name      String
+    logo      String
+    email     String
+    phone     String
+    address   String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    owner        User           @relation(fields: [ownerId], references: [id])
+    ownerId      String
+    License      License[]
+    CompanyUsers CompanyUsers[]
+    ClientTypes  ClientType[]
+    Client       Client[]
+
+    @@index([name])
+}
+
+model License {
+    id        Int     @id @default(autoincrement())
+    company   Company @relation(fields: [companyId], references: [id])
+    companyId Int
+    active    Boolean @default(true)
+    maxUsers  Int
+}
+
+model CompanyUsers {
+    id        Int             @id @default(autoincrement())
+    company   Company         @relation(fields: [companyId], references: [id])
+    companyId Int
+    user      User            @relation(fields: [userId], references: [id])
+    userId    String
+    role      CompanyUserRole @default(USER)
+}
+
+enum CompanyUserRole {
+    OWNER
+    ADMIN
+    USER
+}
+
+model ClientType {
+    id        Int                @id @default(autoincrement())
+    name      String
+    fields    FieldsDefinition[]
+    companyId Int
+    company   Company            @relation(fields: [companyId], references: [id])
+    createdAt DateTime           @default(now())
+    updatedAt DateTime           @updatedAt
+    Client    Client[]
+
+    @@index([name])
+}
+
+model FieldsDefinition {
+    id           Int         @id @default(autoincrement())
+    name         String
+    type         FieldType
+    order        Int
+    required     Boolean
+    createdAt    DateTime    @default(now())
+    updatedAt    DateTime    @updatedAt
+    ClientType   ClientType? @relation(fields: [clientTypeId], references: [id])
+    clientTypeId Int?
+}
+
+enum FieldType {
+    STRING
+    NUMBER
+    DATE
+    BOOLEAN
+    ARRAY
+}
+
+model Client {
+    id           Int        @id @default(autoincrement())
+    name         String
+    fields       Json
+    clientType   ClientType @relation(fields: [clientTypeId], references: [id])
+    clientTypeId Int
+    companyId    Int
+    company      Company    @relation(fields: [companyId], references: [id])
+    createdAt    DateTime   @default(now())
+    updatedAt    DateTime   @updatedAt
+
+    @@index([name])
 }
