@@ -1,26 +1,15 @@
-import {
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-} from "@ant-design/icons";
+import { SettingOutlined, UserOutlined } from "@ant-design/icons";
 import { Menu } from "antd";
-import React from "react";
+import { type ItemType } from "antd/es/menu/hooks/useItems";
+import { useCompanyContext } from "~/context/useCompanyContext";
+
+const menus: ItemType[] = [
+  { key: "1", label: "Clientes", icon: <UserOutlined /> },
+  { key: "2", label: "Configurações", icon: <SettingOutlined /> },
+];
 
 export const SiderMenu = () => {
-  return (
-    <Menu
-      mode="inline"
-      defaultSelectedKeys={["4"]}
-      items={[
-        UserOutlined,
-        VideoCameraOutlined,
-        UploadOutlined,
-        UserOutlined,
-      ].map((icon, index) => ({
-        key: String(index + 1),
-        icon: React.createElement(icon),
-        label: `nav ${index + 1}`,
-      }))}
-    />
-  );
+  const { company } = useCompanyContext();
+
+  return <Menu mode="inline" defaultSelectedKeys={["4"]} items={menus} />;
 };

@@ -3,6 +3,7 @@ import { Image, Layout, theme } from "antd";
 import Link from "next/link";
 import Logo from "public/BrunaReisLogo.svg";
 import React from "react";
+import { useCompanyContext } from "~/context/useCompanyContext";
 import { BreadCrumbNav } from "./Breadcrumb/BreadcrumbNav";
 import { HeaderMenu } from "./Menu/HeaderMenu";
 import { SiderMenu } from "./Menu/SiderMenu";
@@ -31,13 +32,15 @@ export const MainLayout = ({ children }: { children: React.ReactNode }) => {
     token: { colorBgContainer },
   } = theme.useToken();
 
+  const { company } = useCompanyContext();
+
   return (
     <Layout hasSider style={{ height: "100vh", overflow: "auto" }}>
       <Layout.Sider breakpoint="lg" collapsedWidth="0">
         <Link href="/">
           <Image
             preview={false}
-            src={(Logo as { src: string }).src}
+            src={company.logo ?? (Logo as { src: string }).src}
             style={{ padding: "1rem", borderRadius: "15%" }}
             alt="Bruna Reis Logo"
           />

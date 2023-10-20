@@ -6,6 +6,7 @@ import theme from "~/theme/theme.config";
 import { api } from "~/utils/api";
 
 import { MainLayout } from "~/components/MainLayout";
+import { CompanyProvider } from "~/context/useCompanyContext";
 import "~/styles/globals.css";
 
 const MyApp: AppType<{ session: Session | null }> = ({
@@ -15,9 +16,11 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider session={session}>
       <ConfigProvider theme={theme}>
-        <MainLayout>
-          <Component {...pageProps} />
-        </MainLayout>
+        <CompanyProvider>
+          <MainLayout>
+            <Component {...pageProps} />
+          </MainLayout>
+        </CompanyProvider>
       </ConfigProvider>
     </SessionProvider>
   );

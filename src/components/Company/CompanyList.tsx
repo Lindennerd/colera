@@ -1,4 +1,4 @@
-import { LikeOutlined } from "@ant-design/icons";
+import { MoreOutlined } from "@ant-design/icons";
 import { type Company } from "@prisma/client";
 import { List, Space } from "antd";
 import Image from "next/image";
@@ -36,7 +36,7 @@ export const CompanyList = ({ list }: { list: Company[] }) => {
             key={item.id}
             actions={[
               <IconText
-                icon={LikeOutlined}
+                icon={MoreOutlined}
                 text="Ver Mais Detalhes"
                 key={item.id}
                 targetId={item.id}
@@ -44,6 +44,7 @@ export const CompanyList = ({ list }: { list: Company[] }) => {
             ]}
             extra={
               <Image
+                style={{ borderRadius: "15%" }}
                 src={item.logo}
                 width={150}
                 height={150}
