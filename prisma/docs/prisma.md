@@ -47,7 +47,7 @@ VerificationToken {
 }
 Company {
     Int id PK
-    String name
+    String name UK
     String logo
     String email
     String phone

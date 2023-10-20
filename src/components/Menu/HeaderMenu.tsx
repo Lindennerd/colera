@@ -1,4 +1,3 @@
-import { AddCompanyButton } from "../Header/AddCompanyButton";
 import { Auth } from "../Header/Auth";
 import { CompaniesDropdown } from "../Header/CompaniesDropDown";
 
@@ -13,7 +12,6 @@ export const HeaderMenu = () => {
   return (
     <div style={headerMenuStyle}>
       <div id="startMenu">
-        <AddCompanyButton />
         <CompaniesDropdown />
       </div>
       <div id="endMenu">

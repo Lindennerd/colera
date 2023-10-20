@@ -14,23 +14,24 @@ export const CompaniesDropdown = () => {
   );
 
   const [items, setItems] = useState<ItemType[]>([
+    { type: "divider" },
     {
       key: "-1",
-      label: <Link href="company/create">Nova Empresa</Link>,
+      label: <Link href="/company/create">Nova Empresa</Link>,
       icon: <PlusCircleOutlined />,
     },
-    { type: "divider" },
   ]);
 
   useEffect(() => {
     if (!companiesForUser) return;
 
-    setItems(
-      companiesForUser.map((company) => ({
+    setItems((items) => [
+      ...items,
+      ...companiesForUser.map((company) => ({
         key: company.id,
-        label: company.name,
-      }))
-    );
+        label: <Link href={`company/${company.id}`}>{company.name}</Link>,
+      })),
+    ]);
   }, [companiesForUser]);
 
   if (!sessionData) return <></>;
