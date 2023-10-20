@@ -15,7 +15,7 @@ import type { UploadFile, UploadProps } from "antd/es/upload/interface";
 import { useState } from "react";
 import { useImageUpload } from "~/hooks/useImageUpload";
 import { type CreateCompany } from "~/server/api/routers/company/createCompany";
-import upload from "~/supabase/client";
+import { upload } from "~/supabase/client";
 import { api } from "~/utils/api";
 
 export interface CompanyFormProps {
@@ -25,6 +25,7 @@ export interface CompanyFormProps {
 export default function CompanyForm(props: CompanyFormProps) {
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState<string>();
+  const [file, setFile] = useState<File>();
   const { getBase64, beforeUpload } = useImageUpload();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -41,6 +42,7 @@ export default function CompanyForm(props: CompanyFormProps) {
       return;
     }
     if (info.file.status === "done") {
+      setFile(info.file.originFileObj);
       getBase64(info.file.originFileObj!, (url) => {
         setLoading(false);
         setImageUrl(url);
@@ -50,7 +52,8 @@ export default function CompanyForm(props: CompanyFormProps) {
 
   async function mutationSuccess(companyId: number) {
     void messageApi.success("Empresa cadastrada com sucesso!");
-    const url = await upload(imageUrl!);
+    if (!imageUrl || !file) return;
+    const url = await upload(file, companyId);
     mutateUpload({ companyId, logo: url });
   }
 

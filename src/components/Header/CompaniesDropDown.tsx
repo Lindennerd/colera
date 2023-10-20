@@ -3,7 +3,7 @@ import { Dropdown, Space } from "antd";
 import { type ItemType } from "antd/es/menu/hooks/useItems";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { api } from "~/utils/api";
 
 export const CompaniesDropdown = () => {
@@ -13,26 +13,31 @@ export const CompaniesDropdown = () => {
     { enabled: sessionData?.user !== undefined }
   );
 
-  const [items, setItems] = useState<ItemType[]>([
-    { type: "divider" },
-    {
-      key: "-1",
-      label: <Link href="/company/create">Nova Empresa</Link>,
-      icon: <PlusCircleOutlined />,
-    },
-  ]);
+  const defaultItems: ItemType[] = useMemo(
+    () => [
+      { type: "divider" },
+      {
+        key: "-1",
+        label: <Link href="/company/create">Nova Empresa</Link>,
+        icon: <PlusCircleOutlined />,
+      },
+    ],
+    []
+  );
+
+  const [items, setItems] = useState<ItemType[]>([]);
 
   useEffect(() => {
     if (!companiesForUser) return;
 
-    setItems((items) => [
-      ...items,
+    setItems(() => [
       ...companiesForUser.map((company) => ({
         key: company.id,
         label: <Link href={`company/${company.id}`}>{company.name}</Link>,
       })),
+      ...defaultItems,
     ]);
-  }, [companiesForUser]);
+  }, [companiesForUser, defaultItems]);
 
   if (!sessionData) return <></>;
 

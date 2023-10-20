@@ -6,22 +6,24 @@ const supabase = createClient(
   env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-async function upload(logo: string) {
+async function upload(logo: File, id: number) {
   try {
     const { data } = await supabase.storage
       .from("/companies")
-      .upload("logo.png", logo, {
+      .upload(`logo_${id}.png`, logo, {
         cacheControl: "3600",
         upsert: false,
       });
-    return (
-      `https://pexfbuzgoxkernyphnja.supabase.co/storage/v1/object/public/companies/${data?.path}` ??
-      ""
-    );
+    return getPublicPath(data!.path) ?? "";
   } catch (error) {
     console.log("error upload image to supabase", error);
     return "";
   }
 }
 
-export default upload;
+function getPublicPath(file: string) {
+  const { data } = supabase.storage.from("/companies").getPublicUrl(file);
+  return data.publicUrl ?? "";
+}
+
+export { upload };
